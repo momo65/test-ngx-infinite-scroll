@@ -29,8 +29,20 @@ export class AppComponent implements OnInit {
   delIndexes;
   indexWTA:number=0;//index of the next element we are going to concat to words array
   reachedEnd:boolean=false;//to know if we got to the end of the wordsToAdd array or not.
+  listSize=10;
+  initSize=20;
+  addSize=10;
 
   constructor(private store:Store<fromApp.AppState>){}
+
+  setOptions(){
+    console.log(this.listSize,this.initSize,this.addSize);
+    if(this.listSize!=null && this.initSize!=null && this.addSize!=null && this.listSize>0 && this.initSize>0
+      && this.addSize>0){
+        this.store.dispatch(new isActions.SetOptions({controlSize:this.listSize,initialSize:this.initSize,
+          addedSize:this.addSize}));
+      }
+  }
 
   addFromArray(){
     this.store.select("infiniteScroll").pipe(take(1)).subscribe(
@@ -98,8 +110,8 @@ export class AppComponent implements OnInit {
   ngOnInit(){
     this.isState$=this.store.select('infiniteScroll');
     console.log(this.words);
-    this.store.dispatch(new isActions.InitializeScroll({total:this.words.length,data:this.words,initialSize:20,
-      controlSize:10,addedSize:10}));
+    this.store.dispatch(new isActions.InitializeScroll({total:this.words.length,data:this.words,initialSize:this.initSize,
+      controlSize:this.listSize,addedSize:this.addSize}));
   }
 
   nextWords(){

@@ -41,7 +41,8 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
         rd=total-1;
         scrollDDI=10;
       }else{
-        scrollDDI=(total-initSize)/addSize+(initSize-ctrlSize)/(2*total); //*2 to calculate the average distance.
+        scrollDDI=addSize/(total-initSize)+(initSize-ctrlSize)/((initSize/ctrlSize)*total);
+        //*(initSize/ctrlSize) to calculate the average distance.
         rd=initSize-1;
       }
       for(let i=0;i<=rd;i++){
@@ -49,11 +50,12 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
       }
       return {
         ...state,total:total,reachedDown:rd,reachedUp:0,scrollDDistance:scrollDDI,scrollUDistance:0,data:dataI,
-        dataDisplay:[...dDisplay],controlSize:ctrlSize,addedSize:addSize
+        dataDisplay:[...dDisplay],controlSize:ctrlSize,addedSize:addSize,initialSize:initSize
       };
     case isActions.SET_NEXT_SCROLL:
       let rdNS=state.reachedDown+state.addedSize;
-      let ruNS=state.reachedUp+Math.floor(state.addedSize/2);
+      let ruNS=state.reachedUp+Math.floor(state.addedSize/2);//ruNS increments half the pace rdNS increments
+      //to ensure we can see some previous elements when we scroll down.
       if(rdNS<state.total){
         if(rdNS-(state.initialSize-1)<0){
           rdNS=state.initialSize-1;
@@ -73,18 +75,17 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
         dDisplayN.push(state.data[i]);
       }
       console.log(dDisplayN);
-      let scrollDD=state.scrollDDistance-1;
-      let scrollUD=state.scrollUDistance+1;
+      let scrollDD=state.scrollDDistance-state.addedSize/(state.total-rdNS)-(state.initialSize-state.controlSize)/
+      ((state.initialSize/state.controlSize)*state.total);
+      let scrollUD=state.scrollUDistance+state.addedSize/(state.total-rdNS)+(state.initialSize-state.controlSize)/
+      ((state.initialSize/state.controlSize)*state.total);
       console.log(scrollDD);
-      /*if(scrollDD<0){
-        scrollDD++;
-      }*/
       return {
         ...state,reachedDown:rdNS,reachedUp:ruNS,scrollDDistance:scrollDD,scrollUDistance:scrollUD,dataDisplay:[...dDisplayN]
       };
     case isActions.SET_PREV_SCROLL:
-      let rdPS=state.reachedDown-Math.floor(state.addedSize/4);
-      let ruPS=state.reachedUp-Math.floor(state.addedSize/2);
+      let rdPS=state.reachedDown-Math.floor(state.addedSize/2);//rdPS increments half the pace ruPS increments
+      let ruPS=state.reachedUp-state.addedSize;
       if(rdPS<state.total){
         if(rdPS-state.initialSize+1<0){
           rdPS=state.initialSize-1;
@@ -104,12 +105,11 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
         dDisplayP.push(state.data[i]);
       }
       console.log(dDisplayP);
-      let scrollDDis=state.scrollDDistance+1;
-      let scrollUDis=state.scrollUDistance-1;
+      let scrollDDis=state.scrollDDistance+state.addedSize/(ruPS)+(state.initialSize-state.controlSize)/
+      ((state.initialSize/state.controlSize)*state.total);
+      let scrollUDis=state.scrollUDistance-state.addedSize/(ruPS)-(state.initialSize-state.controlSize)/
+      ((state.initialSize/state.controlSize)*state.total);
       console.log(scrollUDis);
-      /*if(scrollUDis<=0){
-        scrollUDis=0.01;
-      }*/
       return {
         ...state,reachedDown:rdPS,reachedUp:ruPS,scrollDDistance:scrollDDis,scrollUDistance:scrollUDis,
         dataDisplay:[...dDisplayP]
@@ -125,7 +125,7 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
       if(totalU-state.total>0){
         if(state.reachedDown==state.total-1){
           rdUpd=state.reachedDown+state.addedSize;
-          ruUpd=state.reachedUp+Math.floor(state.addedSize/2);
+          ruUpd=state.reachedUp+Math.floor(state.addedSize/2);//ruUpd increments half the pace rdUpd increments
           if(rdUpd<totalU){
             if(rdUpd-(state.initialSize-1)<0){
               rdUpd=state.initialSize-1;
@@ -144,8 +144,9 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
           rdUpd=state.reachedDown;
           ruUpd=state.reachedUp;
         }
-        scrollDDUpd=(totalU-state.reachedDown-1)/state.addedSize+(state.initialSize-state.controlSize)/(2*totalU);
-        //*2 to calculate the average because we don't know where the scroll reached exactly.
+        scrollDDUpd=state.scrollDDistance-state.addedSize/(totalU-state.reachedDown-1)-
+        (state.initialSize-state.controlSize)/((state.initialSize/state.controlSize)*totalU);
+        //*(state.initialSize/state.controlSize) to calculate the average because we don't know where the scroll reached exactly.
         scrollUDUpd=state.scrollUDistance;
       }else if(totalU-state.total<0){
         if(state.reachedDown>=totalU){
@@ -159,13 +160,6 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
                 rdUpd=state.initialSize-1;
               }
             }
-            /*if(ruUpd>=0){
-              if(ruUpd+state.initialSize>totalU){
-                ruUpd=totalU-state.initialSize;
-              }
-            }else{
-              ruUpd=0;
-            }*/
           }
           let diff=rdUpd-ruUpd;
           if(rdUpd<totalU-1){
@@ -178,13 +172,16 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
           if(ruUpd<0){//this one too
             ruUpd=0;
           }
-          scrollUDUpd=(state.reachedUp)/state.addedSize+(state.initialSize-state.controlSize)/(2*totalU);
-          //2* to calculate the average too because we don't know where the scroll exactly reached ;p
+          scrollUDUpd=state.scrollUDistance-state.addedSize/(state.reachedUp)-
+          (state.initialSize-state.controlSize)/((state.initialSize/state.controlSize)*totalU);
+          //(state.initialSize/state.controlSize)* to calculate the average too because we don't know where the scroll
+          //exactly reached ;p
           scrollDDUpd=100;
         }else{
           rdUpd=state.reachedDown;
           ruUpd=state.reachedUp;
-          scrollDDUpd=(totalU-state.reachedDown-1)/state.addedSize+(state.initialSize-state.controlSize)/(2*totalU);
+          scrollDDUpd=state.scrollDDistance+state.addedSize/(totalU-state.reachedDown-1)+
+          (state.initialSize-state.controlSize)/((state.initialSize/state.controlSize)*totalU);
           scrollUDUpd=state.scrollUDistance;
         }
       }else{//state.total===totalU
@@ -201,6 +198,12 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
         ...state,total:totalU,reachedDown:rdUpd,reachedUp:ruUpd,scrollDDistance:scrollDDUpd,scrollUDistance:scrollUDUpd,
         data:[...dataU],dataDisplay:[...dDisplayU]
       };
+    case isActions.SET_OPTIONS:
+      console.log(action.payload);
+      return{
+        ...state,controlSize:action.payload.controlSize,initialSize:action.payload.initialSize,
+        addedSize:action.payload.addedSize
+      }
     default:
       return state;
   }

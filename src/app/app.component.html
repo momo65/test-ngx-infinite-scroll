@@ -1,6 +1,6 @@
 <div class="row no-gutters">
-  <div class="ml-4 mt-4 col-xs-10 col-sm-8 col-md-6 form-group">
-    <select infinite-scroll class="form-control col-xs-12 col-sm-12 col-md-12" [size]="10"
+  <div class="ml-4 mt-4 col-xs-7 col-sm-5 col-md-4 form-group">
+    <select infinite-scroll class="form-control col-xs-12 col-sm-12 col-md-12" [size]="listSize"
       [infiniteScrollDistance]="(isState$|async).scrollDDistance" [infiniteScrollUpDistance]="(isState$|async).scrollUDistance"
       (scrolled)="nextWords()" (scrolledUp)="prevWords()" [scrollWindow]="false" [infiniteScrollThrottle]="1"
       [(ngModel)]="selectWord">
@@ -10,6 +10,25 @@
           {{word}}
         </option>
     </select>
+  </div>
+  <div class="ml-3 mt-4 col-xs-4 col-sm-6 col-md-7 form-group">
+    <div class="row no-gutters">
+      <div class="col-xs-4 col-sm-2 col-md-3">
+        <label for="listSize">Size of the list</label>
+        <input id="listSize" type="number" class="form-control" placeholder="List's size" [(ngModel)]="listSize"
+          (ngModelChange)="setOptions()">
+      </div>
+      <div class="ml-3 col-xs-4 col-sm-2 col-md-3">
+        <label for="initSize">Elements loaded Initially</label>
+        <input id="initSize" type="number" class="form-control" placeholder="Initial number of elements to load"
+         [(ngModel)]="initSize" (ngModelChange)="setOptions()">
+      </div>
+      <div class="ml-3 col-xs-4 col-sm-2 col-md-3">
+        <label for="addSize">Elements added</label>
+        <input id="addSize" type="number" class="form-control" placeholder="Number of element to add in each scroll"
+          [(ngModel)]="addSize" (ngModelChange)="setOptions()">
+      </div>
+    </div>
   </div>
 </div>
 <div class="row no-gutters">

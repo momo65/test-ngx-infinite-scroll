@@ -36,7 +36,6 @@ export class AppComponent implements OnInit {
   constructor(private store:Store<fromApp.AppState>){}
 
   setOptions(){
-    console.log(this.listSize,this.initSize,this.addSize);
     if(this.listSize!=null && this.initSize!=null && this.addSize!=null && this.listSize>0 && this.initSize>0
       && this.addSize>0){
         this.store.dispatch(new isActions.SetOptions({controlSize:this.listSize,initialSize:this.initSize,

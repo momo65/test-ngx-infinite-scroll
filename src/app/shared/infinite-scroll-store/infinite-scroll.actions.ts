@@ -1,11 +1,11 @@
 import {Action} from '@ngrx/store';
-
+//The types of the actions of the infiniteScroll's store
 export const INITIALIZE_SCROLL="INITIALIZE_SCROLL";
 export const SET_NEXT_SCROLL="SET_NEXT_SCROLL";
 export const SET_PREV_SCROLL="SET_PREV_SCROLL";
 export const UPDATE_SCROLL="UPDATE_SCROLL";
 export const SET_OPTIONS="SET_OPTIONS";
-
+//The actions of the infiniteScroll's store
 export class InitializeScroll implements Action{
   readonly type=INITIALIZE_SCROLL;
 

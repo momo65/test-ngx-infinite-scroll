@@ -50,7 +50,7 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
       }
       return {//put all calculated values into the state to update it
         ...state,total:total,reachedDown:rd,reachedUp:0,scrollDDistance:scrollDDI,scrollUDistance:0,data:dataI,
-        dataDisplay:[...dDisplay],controlSize:ctrlSize,addedSize:addSize,initialSize:initSize
+        dataDisplay:dDisplay,controlSize:ctrlSize,addedSize:addSize,initialSize:initSize
       };
     case isActions.SET_NEXT_SCROLL://the action that updates the state of the application when we reach a scroll down point
       let rdNS=state.reachedDown+state.addedSize;//increments reachedDown as we scroll down
@@ -81,7 +81,7 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
       let scrollUD=ruNS/state.total;//we update the next scrolling up point
       console.log(scrollUD);
       return {//finally we update the state of the infinite-scroll
-        ...state,reachedDown:rdNS,reachedUp:ruNS,scrollDDistance:scrollDD,scrollUDistance:scrollUD,dataDisplay:[...dDisplayN]
+        ...state,reachedDown:rdNS,reachedUp:ruNS,scrollDDistance:scrollDD,scrollUDistance:scrollUD,dataDisplay:dDisplayN
       };
     case isActions.SET_PREV_SCROLL://the action that triggers when we reach a scroll up point
       let rdPS=state.reachedDown-Math.floor(state.addedSize/2);//rdPS increments half the pace ruPS increments
@@ -110,7 +110,7 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
       console.log(scrollUDis);
       return {//set the infinite-scroll's state
         ...state,reachedDown:rdPS,reachedUp:ruPS,scrollDDistance:scrollDDis,scrollUDistance:scrollUDis,
-        dataDisplay:[...dDisplayP]
+        dataDisplay:dDisplayP
       };
     case isActions.UPDATE_SCROLL://the action that updates the state when we add elements or delete them from the list
       let totalU=action.payload.total;//the new total of elements after manipulating the whole data
@@ -190,7 +190,7 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
       console.log(dDisplayU);
       return {//update infinite-scroll's state in the end of this action
         ...state,total:totalU,reachedDown:rdUpd,reachedUp:ruUpd,scrollDDistance:scrollDDUpd,scrollUDistance:scrollUDUpd,
-        data:[...dataU],dataDisplay:[...dDisplayU]
+        data:dataU,dataDisplay:dDisplayU
       };
     case isActions.SET_OPTIONS://this action allows to update the state when we modify the options of the list
       let ctrlSizeSO=action.payload.controlSize;// take the new values of the options & put em into some variables
@@ -233,7 +233,7 @@ export function infiniteScrollReducer(state=initialState,action:isActions.ISActi
       console.log(scrollUDSO);
       return{//set the state
         ...state,controlSize:ctrlSizeSO,initialSize:initSizeSO,reachedUp:ruSO,scrollDDistance:scrollDDSO,
-        addedSize:addSizeSO,dataDisplay:[...dDisplaySO],scrollUDistance:scrollUDSO
+        addedSize:addSizeSO,dataDisplay:dDisplaySO,scrollUDistance:scrollUDSO
       }
     default://the default case
       return state;
